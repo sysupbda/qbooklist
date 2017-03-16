@@ -1,0 +1,1 @@
+export {RegistrationExpressHandler} from './registration-api.handler';

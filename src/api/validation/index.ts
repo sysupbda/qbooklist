@@ -1,0 +1,1 @@
+export {registerOnRouter} from './validation-api.handler';

@@ -1,0 +1,433 @@
+swagger: '2.0'
+info:
+  title: gbooklist API
+  description: Get a booklist from google once registered
+  version: "0.0.1"
+host: localhost:3000
+schemes:
+  - http
+basePath: /
+produces:
+  - application/json
+consumes:
+  - application/json
+paths:
+  /registration:
+    post:
+      responseClass: FieldValidationError
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      summary: Register a new user
+      description: |
+          Creates a new user for the site
+      parameters:
+        - name: body
+          in: body
+          description: Object with email and newpassword to be validated
+          schema:
+            "$ref": "#/definitions/sampleRegistrationRequest"
+      tags:
+        - Authentification
+      responses:
+        200:
+          description: An object with the valid property set to true
+          schema:
+            $ref: '#/definitions/TokenSuccess'
+        400:
+          description: email and newpassword are mandatory parameters
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        406:
+          description: One of the passed properties had a validation error
+          schema:
+            $ref: '#/definitions/FieldValidationError'
+  /login:
+    post:
+      responseClass: ValidationError
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      summary: Login with existing user
+      description: |
+          Creates a new user for the site
+      parameters:
+        - name: body
+          in: body
+          description: Object with email and password to be validated
+          schema:
+            "$ref": "#/definitions/sampleLoginRequest"
+      tags:
+        - Authentification
+      responses:
+        200:
+          description: An object with the valid property set to true
+          schema:
+            $ref: '#/definitions/TokenSuccess'
+        400:
+          description: email and password are mandatory parameters
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        401:
+          description: Login failed
+          schema:
+            $ref: '#/definitions/ValidationError'
+  /books:
+    get:
+      responseClass: ItemsList
+      produces:
+        - application/json
+      summary: List of books associated to the user
+      description: >
+          Provided the user has the secret cookie set and provides a token, 
+          the list of books associated to the account is produced
+      parameters:
+        - name: secret
+          type: string
+          in: Cookie
+          required: true
+          example: 389742-34243
+          description: The token part hidden from JS but always sent to the server
+        - name: token
+          in: query
+          type: string
+          required: true
+          example: 9824302-23433
+          description: The token returned in the body of the login or register call
+        - name: query
+          type: string
+          required: false
+          description: A search string used to filter the desired list of books
+        - name: offset
+          type: integer
+          required: false
+          description: The offset to start querying the list
+        - name: limit
+          type: integer
+          required: false
+          description: Maximum amount of items to return
+      tags:
+        - Books
+      responses:
+        200:
+          description: The book list is returned
+          schema:
+            $ref: '#/definitions/ItemsList'
+        400:
+          description: No token was provided in the query string
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        401:
+          description: The token provided is either invalid or has expired
+          schema:
+            err:
+              type: string
+              required: true
+              example: not_authorized
+        404:
+          description: The user has no books associated to its account
+          schema:
+            err:
+              type: string
+              required: true
+              example: no_books_found
+    put:
+      responseClass: ItemsList
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      summary: Bulk saves either the provided list or the result of a google book query
+      description: >
+          Provided the user has the secret cookie set and provides a token, 
+          the list of books provided is saved in bulk or google is queried for a list of books
+      parameters:
+        - name: cookie
+          type: string
+          in: header
+          required: true
+          example: secret=389742-34243
+          description: The token part hidden from JS but always sent to the server
+        - name: token
+          in: query
+          type: string
+          required: true
+          example: 9824302-23433
+          description: The token returned in the body of the login or register call
+        - name: body
+          in: body
+          description: Object with fields to be validated
+          schema:
+            "$ref": "#/definitions/BulkItemsUpdate"
+      tags:
+        - Books
+      responses:
+        200:
+          description: List of books updated is returned
+          schema:
+            $ref: '#/definitions/ItemsList'
+        400:
+          description: No token was provided in the query string
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        401:
+          description: The token provided is either invalid or has expired
+          schema:
+            err:
+              type: string
+              required: true
+              example: not_authorized
+        404:
+          description: The user has no books associated to its account
+          schema:
+            err:
+              type: string
+              required: true
+              example: no_books_found
+    post:
+      responseClass: ItemsList
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      summary: Adds or replaces a book in the users library
+      description: >
+          Provided the user has the secret cookie set and provides a token, 
+          the list of books provided is saved in bulk or google is queried for a list of books
+      parameters:
+        - name: cookie
+          type: string
+          in: header
+          required: true
+          example: secret=389742-34243
+          description: The token part hidden from JS but always sent to the server
+        - name: token
+          in: query
+          type: string
+          required: true
+          example: 9824302-23433
+          description: The token returned in the body of the login or register call
+        - name: body
+          in: body
+          description: Book to overwrite or add
+          schema:
+            "$ref": "#/definitions/ItemUpdate"
+      tags:
+        - Books
+      responses:
+        200:
+          description: Book was saved
+          schema:
+            $ref: '#/definitions/ValidationSuccess'
+        400:
+          description: No token was provided in the query string or id/json are missing from the request body
+          schema:
+            err:
+              type: string
+              required: true
+              example: body_must_contain_id_and_json
+        401:
+          description: The token provided is either invalid or has expired
+          schema:
+            err:
+              type: string
+              required: true
+              example: not_authorized
+        422:
+          description: Could not save the book
+          schema:
+            err:
+              type: string
+              required: true
+              example: book_invalid
+  /books/{bookId}:
+    get:
+      responseClass: Item
+      produces:
+        - application/json
+      summary: Retrieves full details of a book
+      description: >
+          Provided the user has the secret cookie set and provides a token, 
+          the requested book is returned
+      parameters:
+        - name: cookie
+          type: string
+          in: header
+          required: true
+          example: secret=389742-34243
+          description: The token part hidden from JS but always sent to the server
+        - name: token
+          in: query
+          type: string
+          required: true
+          example: 9824302-23433
+          description: The token returned in the body of the login or register call
+      tags:
+        - Books
+      responses:
+        200:
+          description: Book details
+          schema:
+            $ref: '#/definitions/Item'
+        400:
+          description: No token was provided in the query string
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        401:
+          description: The token provided is either invalid or has expired
+          schema:
+            err:
+              type: string
+              required: true
+              example: not_authorized
+        404:
+          description: Book with this ID does not exist
+          schema:
+            err:
+              type: string
+              required: true
+              example: no_book_found 
+  /validation:
+    post:
+      responseClass: FieldValidationError
+      consumes: 
+        - application/json
+      produces:
+        - application/json
+      summary: Pre-validate fields for validity
+      description: |
+          Return any validation error or an object with property valid being true
+      parameters:
+        - name: body
+          in: body
+          description: Object with fields to be validated
+          schema:
+            "$ref": "#/definitions/sampleValidationRequest"
+      tags:
+        - Validation
+      responses:
+        200:
+          description: An object with the valid property set to true
+          schema:
+            $ref: '#/definitions/ValidationSuccess'
+        400:
+          description: JSON body is required in post request
+          schema:
+            err:
+              type: string
+              required: true
+              example: bad_request
+        406:
+          description: One of the passed properties had a validation error
+          schema:
+            $ref: '#/definitions/FieldValidationError'
+definitions:
+  ValidationError:
+     properties:
+       err:
+         type: string
+         required: true
+         example: invalid_user_or_password
+       userReadableError:
+         type: string
+         example: Login or password could not be validated
+       userSuggestion:
+         type: string
+         example: Check your login and password
+  FieldValidationError:
+     properties:
+       input:
+         type: string
+         required: true
+         example: abcd
+       field:
+         type: string
+         required: true
+         example: password
+       err:
+         type: string
+         required: true
+         example: too_short
+       userReadableError:
+         type: string
+         example: The minimum length is 10 characters
+       userSuggestion:
+         type: string
+         example: Add to your password
+  ValidationSuccess:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          format: int32
+  TokenSuccess:
+      type: object
+      properties:
+        authToken:
+          description: |
+            Token to use when querying book booklist in addition to cookie secret being set
+          type: string
+          example: -a5d7-7064128080d1
+  sampleValidationRequest:
+      type: object
+      properties:
+        newpassword:
+          description: Check password strength
+          paramType: query
+          required: false
+          type: string
+          example: abcd
+        email:
+          description: Check email validity
+          paramType: query
+          required: false
+          type: string
+          example: dkhj@sdakjhd.co-
+  sampleRegistrationRequest:
+      type: object
+      properties:
+        email:
+          description: Email to register
+          paramType: query
+          required: true
+          type: string
+          example: dkhj@sdakjhd.co-
+        newpassword:
+          description: Password to use
+          paramType: query
+          required: true
+          type: password
+          example: abcd
+  sampleLoginRequest:
+      type: object
+      properties:
+        email:
+          description: User email
+          paramType: query
+          required: true
+          type: string
+          example: dkhj@sdakjhd.com
+        password:
+          description: User password
+          paramType: query
+          required: true
+          type: password
+          example: abcd
+        

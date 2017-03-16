@@ -1,0 +1,65 @@
+{
+  "name": "gbooklist",
+  "version": "0.0.1",
+  "description": "Register/Login and Retrieve a Book List from Google",
+  "main": "index.js",
+  "scripts": {
+    "build": "trash build && tsc -p tsconfig.json",
+    "changelog": "standard-version",
+    "check-coverage": "nyc check-coverage --lines 100 --functions 100 --branches 100",
+    "html-coverage": "nyc report --reporter=html",
+    "lint": "tslint src/**/*.ts",
+    "test": "yarn lint && yarn unit && yarn check-coverage && ava build",
+    "release": "yarn reset && yarn test && yarn changelog",
+    "start": "node build/api/server.js",
+    "reset": "git clean -dfx && git reset --hard && yarn",
+    "unit": "yarn build && nyc ava --verbose --timeout 3s",
+    "watch": "yarn build && concurrently -r --kill-others \"npm run --silent build -- -w\" \"sleepms 2000 && ava --watch --verbose --timeout 5s\""
+  },
+  "author": "Behrang Dadsetan",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.5",
+    "ava": "^0.18.2",
+    "concurrently": "^3.4.0",
+    "fakeredis": "^2.0.0",
+    "nyc": "^10.0.0",
+    "sleep-ms": "^2.0.1",
+    "standard-version": "^4.0.0",
+    "supertest": "^3.0.0",
+    "trash-cli": "^1.4.0",
+    "tslint": "^4.5.1",
+    "tslint-config-standard": "^4.0.0",
+    "typedoc": "^0.5.7",
+    "typescript": "^2.2.1"
+  },
+  "pre-commit": [
+    "tslint"
+  ],
+  "nyc": {
+    "exclude": [
+      "build/**/*.spec.js",
+      "build/tests/**/*.js"
+    ]
+  },
+  "ava": {
+    "files": [
+      "build/**/*.spec.js",
+      "build/tests/**/*.test.js"
+    ]
+  },
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.2",
+    "isemail": "^2.2.1",
+    "redis": "^2.7.0",
+    "request": "^2.81.0",
+    "tslib": "^1.6.0",
+    "uuid": "^3.0.1"
+  }
+}
