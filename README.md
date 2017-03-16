@@ -1,4 +1,4 @@
-# Project Title
+# gbooklist
 
 Manage your personal book list using this API.
 Just register your account and bulk import your books with the PUT /books interface.
