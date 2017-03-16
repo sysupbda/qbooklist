@@ -16,7 +16,6 @@ You will need typescript and yarn to run the commands mentioned below.
 
 A step by step series of examples that tell you have to get a development env running
 
-Say what the step will be
 
 ```
 git clone https://github.com/sysupbda/gbooklist.git
@@ -25,6 +24,8 @@ yarn install
 ```
 
 To get started, 
+
+make sure your redis is running locally. Then:
 
 ```
 yarn start
