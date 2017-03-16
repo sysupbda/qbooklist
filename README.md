@@ -47,6 +47,31 @@ As there is no query rate limiting, this project is currently not usable in prod
 
 Also, you probably don't want to deploy the static directory contents used to deliver swaggerui. Instead deploy that separately on a static file http server.
 
+## Features
+
+### Authentification
+
+The authentification is token based.
+
+When you */login* or */register*, a token piece is set as a **httpOnly** cookie and another returned in the body of the response.
+
+By default, the token is valid for one hour and is stored as a salted **sha256** hash.
+
+All requests to */books* require the **cookie** *secret* and *token* as a query parameter. For clients unable to set the cookie (SwaggerUI for example). you can simply set the entire *token* as a query string.
+
+### Book list API
+
+Note all below queries require a valid **token**. Part of the token is provided in the **query string** with the parameter token. The other part by the cookie set with */register* and */login*
+
+You can read the list of books of a user with `GET /books`. It also allows you to pass a query parameter to filter the results and offset/limit to paginate through results.
+A specific book can be queried with `GET /books/:book`
+
+You can add or update a book by using `POST /books` and provide the book in the body.
+
+You can bulk upload books by using `PUT /books` and `{ "source": "list", "list": [...] }` as the body of the request.
+
+You can also save books from the googleapi call https://www.googleapis.com/books/v1/volumes?q=Quantum%20Ph by using `PUT /books` and `{ "source": "google" }` as the body of the request.
+
 ## Authors
 
 * **Behrang Dadsetan** - *Initial work* - [Ben](https://github.com/sysupbda)
