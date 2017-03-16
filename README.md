@@ -1,4 +1,4 @@
-# gbooklist
+# qbooklist
 
 Manage your personal book list using this API.
 Just register your account and bulk import your books with the PUT /books interface.
@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-You will need typescript and yarn to run the commands mentioned below.
+You will need **git**, **typescript** and **yarn** to run the commands mentioned below.
 
 ### Installing
 
@@ -18,14 +18,14 @@ A step by step series of examples that tell you have to get a development env ru
 
 
 ```
-git clone https://github.com/sysupbda/gbooklist.git
-cd gbooklist
+git clone git@github.com:sysupbda/qbooklist.git
+cd qbooklist
 yarn install
 ```
 
 To get started, 
 
-make sure your redis is running locally. Then:
+make sure your redis-server is running locally. Then:
 
 ```
 yarn start
