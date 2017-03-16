@@ -1,7 +1,7 @@
 {
-  "name": "gbooklist",
-  "version": "0.0.1",
-  "description": "Register/Login and Retrieve a Book List from Google",
+  "name": "qbooklist",
+  "version": "1.0.0",
+  "description": "Register/Login, Manage Book List and Retrieve a Book List from Google",
   "main": "index.js",
   "scripts": {
     "build": "trash build && tsc -p tsconfig.json",

@@ -1,8 +1,8 @@
 swagger: '2.0'
 info:
-  title: gbooklist API
+  title: qbooklist API
   description: Get a booklist from google once registered
-  version: "0.0.1"
+  version: "1.0.0"
 host: localhost:3000
 schemes:
   - http
@@ -103,14 +103,17 @@ paths:
           example: 9824302-23433
           description: The token returned in the body of the login or register call
         - name: query
+          in: query
           type: string
           required: false
           description: A search string used to filter the desired list of books
         - name: offset
+          in: query
           type: integer
           required: false
           description: The offset to start querying the list
         - name: limit
+          in: query
           type: integer
           required: false
           description: Maximum amount of items to return
@@ -119,6 +122,7 @@ paths:
       responses:
         200:
           description: The book list is returned
+          type: object
           schema:
             $ref: '#/definitions/ItemsList'
         400:
@@ -225,7 +229,7 @@ paths:
           in: body
           description: Book to overwrite or add
           schema:
-            "$ref": "#/definitions/ItemUpdate"
+            "$ref": "#/definitions/ItemsListContent"
       tags:
         - Books
       responses:
@@ -282,7 +286,7 @@ paths:
         200:
           description: Book details
           schema:
-            $ref: '#/definitions/Item'
+            $ref: '#/definitions/ItemsListContent'
         400:
           description: No token was provided in the query string
           schema:
@@ -385,6 +389,45 @@ definitions:
             Token to use when querying book booklist in addition to cookie secret being set
           type: string
           example: -a5d7-7064128080d1
+  ItemsList:
+      type: object
+      properties:
+        queryableCount:
+          description: |
+            Total count of queried or queryable objects
+          type: integer
+          example: 10
+        list:
+          description: |
+            List of items full content
+          schema:
+            $ref: '#/definitions/ItemsListContent'
+  ItemsListContent:
+      type: object
+      description: |
+          List of items full content
+      properties:
+        id:
+          description: Item identifier
+          type: string
+        json:
+          description: Item details
+          type: string
+  BulkItemsUpdate:
+      type: object
+      properties:
+        source:
+          description: |
+            Whether the body will contain the items or whether to query them from google
+          type: string
+          example: google
+          required: true
+        list:
+          description: |
+            List of items with full content to save
+          required: false
+          schema:
+            $ref: '#/definitions/ItemsListContent'
   sampleValidationRequest:
       type: object
       properties:
@@ -430,4 +473,4 @@ definitions:
           required: true
           type: password
           example: abcd
-        
+    
