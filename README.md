@@ -48,7 +48,7 @@ Also, you probably don't want to deploy the static directory contents used to de
 
 ## Authors
 
-* **Behrang Dadsetan** - *Initial work* - [PurpleBooth](https://github.com/sysupbda)
+* **Behrang Dadsetan** - *Initial work* - [Ben](https://github.com/sysupbda)
 
 ## License
 
